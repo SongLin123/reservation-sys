@@ -1,0 +1,12 @@
+{
+  "title": "预约订位",
+  "progressbarColor": "#1a9cf3",
+  "colors": {
+    "primary": {
+      "default": "#3B82DC",
+      "deep": "#0984e3",
+      "shallow": "#5D8CDC",
+      "suppl": "#00a8ff"
+    }
+  }
+}

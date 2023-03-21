@@ -1,0 +1,104 @@
+// Copyright IBM Corp. and LoopBack contributors 2020. All Rights Reserved.
+// Node module: @loopback/example-validation-app
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
+import {inject, injectable, Provider} from '@loopback/core';
+import {
+  asMiddleware,
+  ErrorWriterOptions,
+  HttpErrors,
+  LogError,
+  Middleware,
+  MiddlewareContext, Response,
+  RestBindings,
+  RestMiddlewareGroups
+} from '@loopback/rest';
+import {ServerResponse} from 'http';
+
+
+
+
+@injectable(
+  asMiddleware({
+    group: 'RestInfo',
+    upstreamGroups: RestMiddlewareGroups.SEND_RESPONSE,
+    downstreamGroups: RestMiddlewareGroups.CORS,
+  }),
+)
+export class RestInfoMiddlewareProvider implements Provider<Middleware> {
+  constructor(
+    @inject(RestBindings.SequenceActions.LOG_ERROR)
+    protected logError: LogError,
+    @inject(RestBindings.ERROR_WRITER_OPTIONS, {optional: true})
+    protected errorWriterOptions?: ErrorWriterOptions,
+  ) { }
+
+  async value() {
+    const middleware: Middleware = async (ctx, next) => {
+      const result = await next();
+      if (!(result instanceof ServerResponse)) {
+        const req = ctx.request
+        console.log('request', {
+          headers: req.headers,
+          url: req.originalUrl,
+          path: req.path,
+          params: req.params,
+          reqBody: req.body
+        })
+
+
+        console.log('response', result)
+      }
+
+      return result;
+
+    };
+    return middleware;
+  }
+
+  /**
+   * Handle errors
+   * If the request url is `/coffee-shops`, customize the error message.
+   * @param context
+   * @param err
+   */
+  handleError(
+    context: MiddlewareContext,
+    err: HttpErrors.HttpError,
+  ): Response | undefined {
+    // 2. customize error for particular endpoint
+    if (context.request.url === '/coffee-shops') {
+      // if this is a validation error from the PATCH method, customize it
+      // for other validation errors, the default AJV error object will be sent
+      if (err.statusCode === 422 && context.request.method === 'PATCH') {
+        const customizedMessage = 'My customized validation error message';
+
+        let customizedProps = {};
+        if (this.errorWriterOptions?.debug) {
+          customizedProps = {stack: err.stack};
+        }
+
+        // 3. Create a new error with customized properties
+        // you can change the status code here too
+        const errorData = {
+          statusCode: 422,
+          message: customizedMessage,
+          resolution: 'Contact your admin for troubleshooting.',
+          code: 'VALIDATION_FAILED',
+          ...customizedProps,
+        };
+
+        context.response.status(422).send(errorData);
+
+        // 4. log the error using RestBindings.SequenceActions.LOG_ERROR
+        this.logError(err, err.statusCode, context.request);
+
+        // The error was handled
+        return context.response;
+      } else {
+        throw err;
+      }
+    }
+  }
+}
