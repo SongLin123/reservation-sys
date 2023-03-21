@@ -87,6 +87,9 @@ export default ({mode}) => {
     server: {
       // https: true,
       port: 3001,
+      proxy: {
+        '/api': 'http://localhost:3000',
+      }
     },
     esbuild: {
       jsxFactory: 'h',

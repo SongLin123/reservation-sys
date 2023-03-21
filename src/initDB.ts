@@ -1,15 +1,19 @@
 import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import {DbDataSource} from './datasources/db.datasource';
-import {DateReservation, RecordStatus, RecordStatusEnum, Tables, TableStatus, TableStatusEnum} from './models';
-import {DateReservationRepository, RecordStatusRepository, TablesRepository, TableStatusRepository} from './repositories';
+import {DateReservation, MyUser, MyUserCredentials, RecordStatus, RecordStatusEnum, Tables, TableStatus, TableStatusEnum} from './models';
+import {DateReservationRepository, MyUserRepository, RecordStatusRepository, TablesRepository, TableStatusRepository} from './repositories';
+import {MyUserCredentialsRepository} from './repositories/my-user-credentials.repository';
 
 const drop = true; // 是否删除数据
 export async function initDB(ds: DbDataSource) {
+  console.log('server init!!')
+  await initUser(ds);
   await initTables(ds);
   await initTableStatus(ds);
   await initRecordStatus(ds);
   await initDateResvertion(ds);
+
 
 }
 
@@ -121,6 +125,52 @@ async function initTables(ds: DbDataSource) {
   await repository.createAll(
     createList(Tables, source)
   )
+
+}
+
+// 用户
+async function initUser(ds: DbDataSource) {
+
+
+  const userrepository = new MyUserRepository(ds);
+  const credrrepository = new MyUserCredentialsRepository(ds);
+  const count = await userrepository.count()
+
+  if (count.count !== 0) {
+    return
+  }
+
+  await userrepository.createAll(
+    createList(MyUser, [
+      {
+        id: "0d78d411-7534-4ab9-86dd-ad783b623f05",
+        "user_name": "user1",
+        "is_guest": true,
+        "guest_profile": {
+          name: "客人1",
+          "contact_info": "11111111"
+        }
+      },
+
+      {
+        id: "592c6536-9572-4692-a8e1-c5014577d0b6",
+        "user_name": "eye1",
+        "is_guest": false
+      }
+    ])
+  )
+  await credrrepository.createAll(
+    createList(MyUserCredentials, [{
+      id: "6a5ad204-9330-4699-9ddd-6c180e33308e",
+      password: "$2a$10$EUqMJO/WPSKulFJWlgFXHuYFwhld9AmxMwnrvxQfP6PCnq1CiR04m",
+      userId: "0d78d411-7534-4ab9-86dd-ad783b623f05"
+    }, {
+      id: "dd83e081-e18e-42cb-8da3-0beee9be19db",
+      password: "$2a$10$7R/bXKjAOGkEL31HMWMNd.85X16n5NGihA/KAqMcP82.8J/QPDHPa",
+      userId: "592c6536-9572-4692-a8e1-c5014577d0b6"
+    }])
+  )
+
 
 }
 

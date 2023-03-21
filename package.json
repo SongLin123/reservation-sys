@@ -34,7 +34,7 @@
     "preopenapi-spec": "npm run build",
     "openapi-spec": "node ./dist/openapi-spec",
     "prestart": "npm run rebuild",
-    "dev": "NODE_ENV=development node -r source-map-support/register .",
+    "start": "NODE_ENV=development node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "npm run clean && npm run build"
   },

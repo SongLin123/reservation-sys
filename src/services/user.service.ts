@@ -83,7 +83,7 @@ export class MyUserService implements UserService<MyUser, Credentials> {
     });
 
     if (!foundUser) {
-      throw new HttpErrors[406](userNotfound);
+      throw new HttpErrors[401](userNotfound);
     }
     return foundUser;
   }

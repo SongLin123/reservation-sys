@@ -27,12 +27,12 @@ export class MyUserRepository extends DefaultCrudRepository<
     @inject('datasources.db') dataSource: DbDataSource,
 
     @repository.getter('MyUserCredentialsRepository')
-    protected userCredentialsRepositoryGetter: Getter<MyUserCredentialsRepository>,
+    protected userCredentialsRepositoryGetter?: Getter<MyUserCredentialsRepository>,
   ) {
     super(MyUser, dataSource);
     this.userCredentials = this.createHasOneRepositoryFactoryFor(
       'userCredentials',
-      userCredentialsRepositoryGetter,
+      userCredentialsRepositoryGetter!,
     );
     this.registerInclusionResolver(
       'userCredentials',

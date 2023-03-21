@@ -41,7 +41,7 @@ sudo docker run -d -p 27017:27017 mongo
 ```
 2. 启动后端服务
 ```sh
-npm run dev
+npm start
 # 监听端口 3000
 # openapi: /explorer
 ```
@@ -50,6 +50,8 @@ npm run dev
 npm run dev:frontend
 # 监听端口 3001
 ```
+
+
 
 ## 部署
 
