@@ -1,20 +1,26 @@
-import { NIcon as Icon } from 'naive-ui'
+import {NIcon as Icon} from 'naive-ui';
 import type {
-  RouteRecordRaw} from 'vue-router';
+  RouteRecordRaw
+} from 'vue-router';
 import {
   createRouter,
   createWebHashHistory,
-  createWebHistory,
-} from 'vue-router'
-import UilTachometerFast from '~icons/uil/tachometer-fast'
+  createWebHistory
+} from 'vue-router';
+import {useStoreRef} from '~/hooks/use-store-ref';
+import {useUserStore} from '~/stores/user';
+import UilTachometerFast from '~icons/uil/tachometer-fast';
 
-import SetupLayout from '../layouts/setup-view.vue'
-import { SidebarLayout } from '../layouts/sidebar'
-import DashBoardView from '../views/dashboard/index.vue'
-import LoginView from '../views/login/index.vue'
-import { RouteName } from './name'
+import SetupLayout from '../layouts/setup-view.vue';
+import {SidebarLayout} from '../layouts/sidebar';
+import AdminMannage from '../views/admin-mannage/index.vue';
+import DashBoardView from '../views/dashboard/index.vue';
+import LoginView from '../views/login/index.vue';
+import {RouteName} from './name';
 
-export const routeForMenu: Array<RouteRecordRaw> = [
+
+
+const routeForMenu: Array<RouteRecordRaw> = [
   {
     path: '/dashboard',
     component: DashBoardView,
@@ -26,6 +32,25 @@ export const routeForMenu: Array<RouteRecordRaw> = [
           <UilTachometerFast />
         </Icon>
       ),
+    },
+  },
+  {
+    path: '/admin-mannage',
+    component: AdminMannage,
+    name: RouteName.AdminMannage,
+    meta: {
+      title: '用户管理',
+      icon: (
+        <Icon>
+          <UilTachometerFast />
+        </Icon>
+      ),
+      hide: () => {
+        const {user} = useStoreRef(useUserStore);
+        if (!user.value) return true
+        return user.value.is_guest
+
+      }
     },
   },
 ]
@@ -47,13 +72,13 @@ export const router = createRouter({
       children: [
         {
           path: '/setup-api',
-          meta: { isPublic: true, title: '设置接口地址' },
+          meta: {isPublic: true, title: '设置接口地址'},
           component: () => import('../views/setup/setup-api'),
         },
         {
           path: '/login',
           name: RouteName.Login,
-          meta: { isPublic: true, title: '登陆' },
+          meta: {isPublic: true, title: '登陆'},
           component: LoginView,
         },
       ],
@@ -62,8 +87,9 @@ export const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: '404',
-      meta: { isPublic: true },
+      meta: {isPublic: true},
       redirect: '/',
     },
   ],
 })
+

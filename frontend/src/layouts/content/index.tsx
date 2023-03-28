@@ -1,8 +1,8 @@
-import type { PropType} from 'vue';
-import { computed, defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
+import type {PropType} from 'vue';
+import {computed, defineComponent} from 'vue';
+import {useRouter} from 'vue-router';
 
-import styles from './index.module.css'
+import styles from './index.module.css';
 
 export const ContentLayout = defineComponent({
   props: {
@@ -19,7 +19,7 @@ export const ContentLayout = defineComponent({
     },
   },
   setup(props, ctx) {
-    const { slots } = ctx
+    const {slots} = ctx
     const router = useRouter()
     const route = computed(() => router.currentRoute)
     const A$ael = () => props.actionsElement ?? null
@@ -27,8 +27,7 @@ export const ContentLayout = defineComponent({
     return () => (
       <>
         <header class={styles['header']}>
-          <div class={styles['header-blur']}></div>
-          
+
 
           <div class={[styles['header-actions'], 'space-x-4']}>
             {props.actionsElement ? <A$ael /> : slots.actions?.()}

@@ -1,6 +1,7 @@
 import $RouterView from 'layouts/router-view'
 import {NLayoutContent} from 'naive-ui'
 import {defineComponent, watchEffect} from 'vue'
+import {Sidebar} from '~/components/sidebar'
 
 import {useStoreRef} from '~/hooks/use-store-ref'
 import {useUserStore} from '~/stores/user'
@@ -39,21 +40,21 @@ export const SidebarLayout = defineComponent({
 
         <PageHead
         />
-        {/* <Sidebar
+        <Sidebar
           collapse={collapse.value}
           width={sidebarWidth.value}
           onCollapseChange={(s) => {
             collapse.value = s
           }}
-        /> */}
+        />
 
         <NLayoutContent
           embedded
           nativeScrollbar={false}
           style={{
-            // left: !collapse.value ? `${sidebarWidth.value}px` : '100px',
-            // pointerEvents: isLaptop.value && !collapse.value ? 'none' : 'auto',
-            // top: '40px',
+            width: `calc(100% - ${!collapse.value ? `${sidebarWidth.value}px` : '100px'})`,
+            left: !collapse.value ? `${sidebarWidth.value}px` : '100px',
+            pointerEvents: isLaptop.value && !collapse.value ? 'none' : 'auto',
           }}
         >
           <$RouterView />

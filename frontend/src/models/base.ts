@@ -12,8 +12,8 @@ export interface PaginateResult<T> {
 }
 
 export interface GuestProfile {
-  name: boolean;
-  contact_info: number;
+  name: string;
+  contact_info: string;
 }
 
 export interface UserCredentials {
@@ -28,6 +28,7 @@ export interface GuestUser {
   id: string;
   guest_profile: GuestProfile;
   userCredentials: UserCredentials;
+  state: 'disable'|'enable';
 }
 
 export interface Tables {
@@ -51,10 +52,6 @@ export interface DateReservation {
   tableStatus: TableStatus;
 }
 
-export interface GuestProfile {
-  name: boolean;
-  contact_info: number;
-}
 
 export interface UserCredentials {
   password: string;
@@ -70,7 +67,7 @@ export interface LastModifiyEmploye {
   userCredentials: UserCredentials;
 }
 
-export interface ResvertionRecord  {
+export interface ResvertionRecord {
   create_time: string;
   last_update_time: string;
   id: string;

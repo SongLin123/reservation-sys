@@ -72,7 +72,10 @@ const createColumns = ({
             size: "small",
             onClick: () => changeStatus(row),
             disabled: RecordStatusEnum.CANCELED == row.record_status,
-            type: RecordStatusEnum.APPOINTMENT_IN_PROGRESS ? "primary" : "warning",
+            type:
+              RecordStatusEnum.APPOINTMENT_IN_PROGRESS == row.record_status
+                ? "primary"
+                : "warning",
           },
           {
             default: () => {

@@ -2,8 +2,9 @@ import {UserService} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {Principal, securityId} from '@loopback/security';
-import {compareSync} from 'bcryptjs';
-import {MyUser, MyUserWithRelations} from '../models';
+import {compareSync, genSaltSync, hashSync} from 'bcryptjs';
+import _ from 'lodash';
+import {MyUser, MyUserWithRelations, NewUserRequest} from '../models';
 // User --> MyUser
 // UserRepository --> MyUserRepository
 import {MyUserRepository} from '../repositories';
@@ -71,7 +72,8 @@ export class MyUserService implements UserService<MyUser, Credentials> {
       user_name: user.user_name,
       id: user.id,
       is_guest: user.is_guest,
-      guest_profile: user.guest_profile
+      guest_profile: user.guest_profile,
+      state: user.state
     };
   }
 
@@ -86,5 +88,17 @@ export class MyUserService implements UserService<MyUser, Credentials> {
       throw new HttpErrors[401](userNotfound);
     }
     return foundUser;
+  }
+
+
+  async createUser(newUserRequest: NewUserRequest) {
+    const password = hashSync(newUserRequest.password, genSaltSync());
+    const savedUser = await this.userRepository.create(
+      _.omit(newUserRequest, 'password'),
+    );
+
+    await this.userRepository.userCredentials(savedUser.id).create({password});
+
+    return savedUser
   }
 }

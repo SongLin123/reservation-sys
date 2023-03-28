@@ -28,6 +28,7 @@
   @apply relative py-6 w-full flex items-center justify-center;
 }
 .root {
+
   .sidebar {
     width: var(--w);
     transition: width 0.5s;

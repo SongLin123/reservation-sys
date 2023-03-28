@@ -1,17 +1,15 @@
-import { API_URL } from 'constants/env'
-import { NLayoutContent , NIcon as Icon } from 'naive-ui'
-import type { PropType} from 'vue';
-import { computed, defineComponent, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import Hamburger from '~icons/material-symbols/menu'
+import {NIcon as Icon, NLayoutContent} from 'naive-ui';
+import type {PropType} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
+import {useRouter} from 'vue-router';
+import Hamburger from '~icons/material-symbols/menu';
 
-import { useStoreRef } from '~/hooks/use-store-ref'
-import { useUserStore } from '~/stores/user'
+import {useStoreRef} from '~/hooks/use-store-ref';
+import {useUserStore} from '~/stores/user';
 
-import type { MenuModel} from '../../utils/build-menus';
-import { buildMenus } from '../../utils/build-menus'
-import { Avatar } from '../avatar'
-import styles from './index.module.css'
+import type {MenuModel} from '../../utils/build-menus';
+import {buildMenus} from '../../utils/build-menus';
+import styles from './index.module.css';
 
 export const Sidebar = defineComponent({
   name: 'SidebarComp',
@@ -25,15 +23,16 @@ export const Sidebar = defineComponent({
       required: true,
     },
     onCollapseChange: {
-      type: Function as PropType<{ (status: boolean): void }>,
+      type: Function as PropType<{(status: boolean): void}>,
       required: true,
     },
   },
   setup(props) {
     const router = useRouter()
-    const { user } = useStoreRef(useUserStore)
+    const {user} = useStoreRef(useUserStore)
     const route = computed(() => router.currentRoute.value)
     const menus = ref<MenuModel[]>([])
+
     onMounted(() => {
       // @ts-expect-error
       menus.value = buildMenus(router.getRoutes())
@@ -73,12 +72,11 @@ export const Sidebar = defineComponent({
       >
         <div
           class={
-            `fixed left-0 top-0 h-screen overflow-hidden z-10 text-white ${ 
-            styles['sidebar']}`
+            `fixed left-0 top-0 h-screen overflow-hidden z-10 text-white ${styles['sidebar']}`
           }
         >
           <div class={'title relative font-medium text-center text-2xl'}>
-            <h1 class="py-6" style={{ display: props.collapse ? 'none' : '' }}>
+            <h1 class="py-6" style={{display: props.collapse ? 'none' : ''}}>
               {tlname}
             </h1>
             <button
@@ -101,11 +99,14 @@ export const Sidebar = defineComponent({
                     class={[
                       'py-2',
                       route.value.fullPath === item.fullPath ||
-                      route.value.fullPath.startsWith(item.fullPath)
+                        route.value.fullPath.startsWith(item.fullPath)
                         ? styles['active']
                         : '',
 
                       styles['item'],
+
+                      ((item.hide instanceof Function && item.hide()) && 'hidden')
+
                     ]}
                     data-path={item.fullPath}
                   >
@@ -119,7 +120,7 @@ export const Sidebar = defineComponent({
                       }
                     >
                       <span
-                        style={{ flexBasis: '3rem' }}
+                        style={{flexBasis: '3rem'}}
                         class="flex justify-center"
                       >
                         {item.icon}
@@ -129,8 +130,7 @@ export const Sidebar = defineComponent({
                     {item.subItems && (
                       <ul
                         class={[
-                          `overflow-hidden  ${ 
-                            item.subItems.length ? styles['has-child'] : ''}`,
+                          `overflow-hidden  ${item.subItems.length ? styles['has-child'] : ''}`,
                           _index.value === index ? styles['expand'] : '',
                         ]}
                         style={{
@@ -147,7 +147,7 @@ export const Sidebar = defineComponent({
                               // data-fullPath={child.fullPath}
                               class={[
                                 route.value.fullPath === child.fullPath ||
-                                route.value.fullPath.startsWith(child.fullPath)
+                                  route.value.fullPath.startsWith(child.fullPath)
                                   ? styles['active']
                                   : '',
                                 styles['item'],
@@ -159,7 +159,7 @@ export const Sidebar = defineComponent({
                               >
                                 <span
                                   class="flex justify-center items-center"
-                                  style={{ flexBasis: '3rem' }}
+                                  style={{flexBasis: '3rem'}}
                                 >
                                   {child.icon}
                                 </span>
@@ -178,8 +178,8 @@ export const Sidebar = defineComponent({
             </div>
           </NLayoutContent>
 
-        </div>
-      </div>
+        </div >
+      </div >
     )
   },
 })

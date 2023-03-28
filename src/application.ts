@@ -21,11 +21,13 @@ import {MyUser} from './models';
 import {MyUserRepository} from './repositories';
 import {MyUserCredentialsRepository} from './repositories/my-user-credentials.repository';
 // import {JwtLoginService} from './services/jwt-login.service';
+import {GraphQLBindings, GraphQLComponent} from '@loopback/graphql';
 import {format, LoggingBindings, LoggingComponent} from '@loopback/logging';
 import {initDB} from './initDB';
 import {IsGuestAuthenticationStrategy} from './is-guest.auth';
 import {RestInfoMiddlewareProvider} from './middleware/rest-info.middleware';
 import {MyAuthStrategyProvider} from './my-auth-strategy-provider';
+import {sampleRecipes} from './sample-recipes';
 import {CreateRecordVerificationService} from './services';
 import {Credentials, MyUserService} from './services/user.service';
 
@@ -53,15 +55,6 @@ export class ReservationSysApplication extends BootMixin(
 
     this.component(RestExplorerComponent);
     this.projectRoot = __dirname;
-    // Customize @loopback/boot Booter Conventions here
-    this.bootOptions = {
-      controllers: {
-        // Customize ControllerBooter Conventions here
-        dirs: ['controllers'],
-        extensions: ['.controller.js'],
-        nested: true
-      },
-    };
 
 
     // Mount authentication system
@@ -100,10 +93,35 @@ export class ReservationSysApplication extends BootMixin(
     )
 
 
+    this.component(GraphQLComponent);
+    this.configure(GraphQLBindings.GRAPHQL_SERVER).to({asMiddlewareOnly: true});
+    const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
+    this.expressMiddleware('middleware.express.GraphQL', server.expressApp);
+    // It's possible to register a graphql context resolver
+    this.bind(GraphQLBindings.GRAPHQL_CONTEXT_RESOLVER).to(context => {
+      return {...context};
+    });
+    this.bind('recipes').to([...sampleRecipes]);
 
     // 注册鉴权器
     registerAuthenticationStrategy(this, IsGuestAuthenticationStrategy);
     registerAuthenticationStrategy(this, MyAuthStrategyProvider);
+    // Customize @loopback/boot Booter Conventions here
+    this.bootOptions = {
+      controllers: {
+        // Customize ControllerBooter Conventions here
+        dirs: ['controllers'],
+        extensions: ['.controller.js'],
+        nested: true
+      },
+
+      graphqlResolvers: {
+        // Customize ControllerBooter Conventions here
+        dirs: ['graphql-resolvers'],
+        extensions: ['.js'],
+        nested: true,
+      },
+    };
 
 
     // 绑定

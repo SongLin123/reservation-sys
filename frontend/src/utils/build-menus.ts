@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import type { RouteRecordNormalized } from 'vue-router'
+import type {RouteRecordNormalized} from 'vue-router'
 
 type TRouteRecordNormalized = Omit<RouteRecordNormalized, 'meta'> & {
   meta?: {
@@ -18,7 +18,8 @@ export interface MenuModel {
   subItems?: Array<MenuModel>
   hasParent: boolean
   fullPath: string
-  query?: any
+  query?: any,
+  hide?: boolean | (() => boolean)
 }
 
 const parsePath = (path: string, params?: KV) => {
@@ -56,6 +57,7 @@ const buildModel = (
     hasParent,
     fullPath: fullPath.replaceAll('//', '/'),
     query: item.meta?.query,
+    hide: item.meta?.hide
   }
 }
 function buildSubMenus(route: TRouteRecordNormalized, prevPath = '') {
@@ -83,7 +85,7 @@ export const buildMenus = (
   ).children
     .filter(
       (item: TRouteRecordNormalized) =>
-        item.path !== '*' && item.meta?.hide !== true,
+        item.path !== '*'
     )
     .map((item: TRouteRecordNormalized) => {
       return buildModel(item, false, '')

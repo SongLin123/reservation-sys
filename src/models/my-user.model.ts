@@ -2,15 +2,21 @@
 import {Entity, hasOne, model, property} from '@loopback/repository';
 import {MyUserCredentials} from './my-user-credentials.model';
 // import {UserCredentials} from './my-user-credentials.model';
+import {field, ID, inputType, objectType} from '@loopback/graphql';
 
+@inputType('GuestProfileInput')
+@objectType()
 @model()
-class GuestProfile {
+export class GuestProfile {
+  @field()
   @property({
     type: 'string',
     require: true,
     description: '姓名',
   })
   name: string;
+
+  @field()
   @property({
     type: 'string',
     require: true,
@@ -19,12 +25,14 @@ class GuestProfile {
   contact_info: string;
 }
 
+@objectType({description: 'MyUser'})
 @model({
   settings: {
     strict: false,
   }
 })
 export class MyUser extends Entity {
+  @field(type => ID)
   @property({
     type: 'string',
     id: true,
@@ -33,6 +41,7 @@ export class MyUser extends Entity {
   })
   id: string;
 
+  @field(type => String)
   @property({
     type: 'string',
     required: true,
@@ -41,6 +50,7 @@ export class MyUser extends Entity {
   })
   user_name: string;
 
+  @field(type => Boolean)
   @property({
     type: 'boolean',
     required: true,
@@ -49,7 +59,9 @@ export class MyUser extends Entity {
   })
   is_guest: boolean;
 
-
+  @field(type => GuestProfile, {
+    nullable: true
+  })
   @property({
     type: "object",
     required: false,
@@ -62,7 +74,14 @@ export class MyUser extends Entity {
 
 
 
-
+  @field(type => String, {nullable: true})
+  @property({
+    type: 'string',
+    description: '是否是启用',
+    default: 'enable',
+    updateOnCreate: true
+  })
+  state: string;
 
 
   @hasOne(() => MyUserCredentials, {keyFrom: 'id', keyTo: 'userId'})
